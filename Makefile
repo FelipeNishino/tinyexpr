@@ -33,6 +33,9 @@ example2: example2.o tinyexpr.o
 example3: example3.o tinyexpr.o
 	$(CC) $(CCFLAGS) -o $@ $^ $(LFLAGS)
 
+examplefac: examplefac.o tinyexpr.o
+	$(CC) $(CCFLAGS) -o $@ $^ $(LFLAGS)
+
 repl-readline.o: repl.c
 	$(CC) -c -DUSE_READLINE $(CCFLAGS) $< -o $@
 
@@ -40,4 +43,4 @@ repl-readline.o: repl.c
 	$(CC) -c $(CCFLAGS) $< -o $@
 
 clean:
-	rm -f *.o *.exe example example2 example3 bench repl smoke_pr smoke
+	rm -f *.o *.exe example example2 example3 examplefac bench repl smoke_pr smoke
