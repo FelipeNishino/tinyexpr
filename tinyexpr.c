@@ -56,7 +56,8 @@ typedef double (*te_fun2)(double, double);
 
 enum {
     TOK_NULL = TE_CLOSURE7+1, TOK_ERROR, TOK_END, TOK_SEP,
-    TOK_OPEN, TOK_CLOSE, TOK_NUMBER, TOK_VARIABLE, TOK_INFIX
+    TOK_OPEN, TOK_CLOSE, TOK_NUMBER, TOK_VARIABLE, TOK_INFIX, 
+    TOK_SUFIX
 };
 
 
@@ -292,6 +293,7 @@ void next_token(state *s) {
                     case ')': s->type = TOK_CLOSE; break;
                     case ',': s->type = TOK_SEP; break;
                     case ' ': case '\t': case '\n': case '\r': break;
+                    case '!': s->type = TOK_SUFIX; s->function = fac; break;
                     default: s->type = TOK_ERROR; break;
                 }
             }
@@ -315,7 +317,6 @@ static te_expr *base(state *s) {
             ret->value = s->value;
             next_token(s);
             break;
-
         case TOK_VARIABLE:
             ret = new_expr(TE_VARIABLE, 0);
             ret->bound = s->bound;
@@ -398,6 +399,19 @@ static te_expr *base(state *s) {
     return ret;
 }
 
+static te_expr *factorial(state *s) {
+    /* <factorial>     =   <base> ["!"]*/
+    te_expr *ret = base(s);
+  
+    if (s->type == TOK_SUFIX && s->function == fac) {
+        te_fun2 t = s->function;
+        next_token(s);
+        ret = NEW_EXPR(TE_FUNCTION1 | TE_FLAG_PURE, ret);
+        ret->function = t;
+    }
+
+    return ret;
+}
 
 static te_expr *power(state *s) {
     /* <power>     =    {("-" | "+")} <base> */
@@ -410,9 +424,9 @@ static te_expr *power(state *s) {
     te_expr *ret;
 
     if (sign == 1) {
-        ret = base(s);
+        ret = factorial(s);
     } else {
-        ret = NEW_EXPR(TE_FUNCTION1 | TE_FLAG_PURE, base(s));
+        ret = NEW_EXPR(TE_FUNCTION1 | TE_FLAG_PURE, factorial(s));
         ret->function = negate;
     }
 
