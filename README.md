@@ -3,6 +3,21 @@
 
 <img alt="TinyExpr logo" src="https://codeplea.com/public/content/tinyexpr_logo.png" align="right"/>
 
+# Sufix Factorial Patch
+
+### Exemplo
+
+```
+make examplefac
+./examplefac.out
+```
+
+---
+
+# Original README
+
+---
+
 # TinyExpr
 
 TinyExpr is a very small recursive descent parser and evaluation engine for
